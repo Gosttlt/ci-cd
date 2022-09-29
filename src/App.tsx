@@ -1,58 +1,61 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import Container from 'components/Container'
+import {
+  useAddProductMutation,
+  useDelProductMutation,
+  useGetGoodsQuery
+} from 'store'
 
-function App() {
+import React, {useState} from 'react'
+
+const App = () => {
+  const [count, setCount] = useState('')
+  const {isLoading, data = []} = useGetGoodsQuery(count)
+  const [addProduct, {error: errorAdd}] = useAddProductMutation()
+  const [delProduct] = useDelProductMutation()
+  const [input, setInput] = useState('')
+
+
+
+  const handleAddProduct = async () => {
+    if (input) {
+      await addProduct({name: input})
+    }
+  }
+  const handlerDelProduct = async (id: number) => {
+    await delProduct(id)
+  }
+
+  if (isLoading) {
+    return <div>Загрузка...</div>
+  }
+  if (errorAdd) {
+    return <div>123</div>
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+    <Container>
+      <div>
+        <div>
+          <input type="text" onChange={e => setInput(e.target.value)} />
+          <button onClick={handleAddProduct}>Add Product</button>
+        </div>
+        <select value={count} onChange={e => setCount(e.target.value)}>
+          <option value="">all</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+        <div>
+          {data.map(el => (
+            <div key={el.id}>
+              <div>{el.name}</div>
+              <button onClick={() => handlerDelProduct(el.id)}>x</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Container>
+  )
 }
 
-export default App;
+export default App
