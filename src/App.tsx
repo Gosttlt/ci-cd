@@ -4,7 +4,6 @@ import {
   useDelProductMutation,
   useGetGoodsQuery
 } from 'store'
-
 import React, {useState} from 'react'
 
 const App = () => {
